@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { OnboardingScreen } from './components/OnboardingScreen';
 import { HomeDashboard } from './components/HomeDashboard';
 import { HealthInsights } from './components/HealthInsights';
@@ -13,21 +14,27 @@ export default function App() {
   const [activeScreen, setActiveScreen] = useState<'home' | 'insights' | 'trends' | 'experimental' | 'device' | 'profile'>('home');
 
   if (!hasSeenOnboarding) {
-    return <OnboardingScreen onComplete={() => setHasSeenOnboarding(true)} />;
+    return (
+      <ThemeProvider>
+        <OnboardingScreen onComplete={() => setHasSeenOnboarding(true)} />
+      </ThemeProvider>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="mx-auto max-w-md">
-        {activeScreen === 'home' && <HomeDashboard />}
-        {activeScreen === 'insights' && <HealthInsights />}
-        {activeScreen === 'trends' && <TrendsHistory />}
-        {activeScreen === 'experimental' && <ExperimentalFeatures />}
-        {activeScreen === 'device' && <DeviceStatus />}
-        {activeScreen === 'profile' && <ProfileSettings />}
-        
-        <BottomNav activeScreen={activeScreen} onNavigate={setActiveScreen} />
+    <ThemeProvider>
+      <div className="min-h-screen pb-20 dark:bg-gray-900 bg-gray-50 transition-colors duration-300">
+        <div className="mx-auto max-w-lg">
+          {activeScreen === 'home' && <HomeDashboard />}
+          {activeScreen === 'insights' && <HealthInsights />}
+          {activeScreen === 'trends' && <TrendsHistory />}
+          {activeScreen === 'experimental' && <ExperimentalFeatures />}
+          {activeScreen === 'device' && <DeviceStatus />}
+          {activeScreen === 'profile' && <ProfileSettings />}
+          
+          <BottomNav activeScreen={activeScreen} onNavigate={setActiveScreen} />
+        </div>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }
