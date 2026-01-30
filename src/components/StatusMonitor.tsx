@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { Wifi, Bluetooth, Cloud, Cpu, Activity, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
+// Update interval constant for connection status simulation (ms)
+const CONNECTION_UPDATE_INTERVAL_MS = 2000;
+
 interface ConnectionStatus {
   name: string;
   icon: React.ElementType;
@@ -22,12 +25,25 @@ export function StatusMonitor() {
   // Simulate real-time latency updates
   useEffect(() => {
     const interval = setInterval(() => {
-      setConnections(prev => prev.map(conn => ({
-        ...conn,
-        latency: Math.max(5, conn.latency + Math.floor(Math.random() * 20) - 10),
-        status: Math.random() > 0.95 ? 'warning' : conn.status === 'warning' && Math.random() > 0.5 ? 'connected' : conn.status
-      })));
-    }, 2000);
+      setConnections(prev => prev.map(conn => {
+        const newLatency = Math.max(5, conn.latency + Math.floor(Math.random() * 20) - 10);
+        
+        // Proper status transition logic
+        let newStatus = conn.status;
+        const rand = Math.random();
+        if (conn.status === 'connected' && rand > 0.95) {
+          newStatus = 'warning';
+        } else if (conn.status === 'warning' && rand > 0.5) {
+          newStatus = 'connected';
+        }
+        
+        return {
+          ...conn,
+          latency: newLatency,
+          status: newStatus
+        };
+      }));
+    }, CONNECTION_UPDATE_INTERVAL_MS);
 
     return () => clearInterval(interval);
   }, []);
@@ -117,7 +133,7 @@ export function StatusMonitor() {
             {connections.filter(c => c.status === 'connected').length}/{connections.length} Active
           </span>
         </div>
-        <div className="mt-2 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+        <div className={`mt-2 h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-gray-600' : 'bg-gray-200'}`}>
           <div 
             className="h-full bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full transition-all duration-500"
             style={{ width: `${(connections.filter(c => c.status === 'connected').length / connections.length) * 100}%` }}

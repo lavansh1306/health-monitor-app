@@ -35,11 +35,24 @@ export function DeviceStatus() {
   // Simulate real-time latency updates
   useEffect(() => {
     const interval = setInterval(() => {
-      setConnections(prev => prev.map(conn => ({
-        ...conn,
-        latency: Math.max(5, conn.latency + Math.floor(Math.random() * 20) - 10),
-        status: Math.random() > 0.95 ? 'warning' : conn.status === 'warning' && Math.random() > 0.5 ? 'connected' : conn.status
-      })));
+      setConnections(prev => prev.map(conn => {
+        const newLatency = Math.max(5, conn.latency + Math.floor(Math.random() * 20) - 10);
+        
+        // Proper status transition logic
+        let newStatus = conn.status;
+        const rand = Math.random();
+        if (conn.status === 'connected' && rand > 0.95) {
+          newStatus = 'warning';
+        } else if (conn.status === 'warning' && rand > 0.5) {
+          newStatus = 'connected';
+        }
+        
+        return {
+          ...conn,
+          latency: newLatency,
+          status: newStatus
+        };
+      }));
     }, 2000);
 
     return () => clearInterval(interval);

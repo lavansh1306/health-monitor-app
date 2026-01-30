@@ -1,5 +1,5 @@
 import { AlertCircle, Shield, CheckCircle, Activity, Heart, TrendingUp } from 'lucide-react';
-import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface OnboardingScreenProps {
   onComplete: () => void;
@@ -96,7 +96,7 @@ function OnboardingContent({ onComplete }: OnboardingScreenProps) {
         >
           I Understand, Continue
         </button>
-        <p className={`text-xs text-center mt-4 ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
+        <p className={`text-xs text-center mt-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
           By continuing, you acknowledge this disclaimer
         </p>
       </div>

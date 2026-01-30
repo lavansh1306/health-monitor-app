@@ -6,7 +6,10 @@ import { StatusMonitor } from './StatusMonitor';
 import { SleepCapture } from './SleepCapture';
 import { HealthRiskRing } from './HealthRiskRing';
 
-// Generate mock time-series data
+// Update interval constant for vitals simulation (ms)
+const VITALS_UPDATE_INTERVAL_MS = 3000;
+
+// Generate mock time-series data for charts
 const generateData = (baseValue: number, variance: number, count: number = 24) => {
   return Array.from({ length: count }, (_, i) => ({
     value: baseValue + Math.sin(i / 3) * variance + (Math.random() - 0.5) * variance
@@ -32,16 +35,30 @@ export function HomeDashboard() {
   // Simulate real-time updates
   useEffect(() => {
     const interval = setInterval(() => {
-      setVitalData(prev => ({
-        ...prev,
-        spo2: Math.min(100, Math.max(94, prev.spo2 + (Math.random() - 0.5) * 2)),
-        heartRate: Math.round(Math.max(60, Math.min(100, prev.heartRate + (Math.random() - 0.5) * 4))),
-        respiratoryRate: Math.round(Math.max(12, Math.min(20, prev.respiratoryRate + (Math.random() - 0.5) * 2))),
-        temperature: Math.round((Math.max(97.5, Math.min(99.5, prev.temperature + (Math.random() - 0.5) * 0.3))) * 10) / 10,
-        hydration: Math.round(Math.max(70, Math.min(100, prev.hydration + (Math.random() - 0.5) * 3))),
-        stress: Math.round(Math.max(10, Math.min(50, prev.stress + (Math.random() - 0.5) * 5)))
-      }));
-    }, 3000);
+      setVitalData(prev => {
+        const newSpo2 = Math.min(100, Math.max(94, prev.spo2 + (Math.random() - 0.5) * 2));
+        const newHeartRate = Math.round(Math.max(60, Math.min(100, prev.heartRate + (Math.random() - 0.5) * 4)));
+        const newRespiratoryRate = Math.round(Math.max(12, Math.min(20, prev.respiratoryRate + (Math.random() - 0.5) * 2)));
+        const newTemperature = Math.round((Math.max(97.5, Math.min(99.5, prev.temperature + (Math.random() - 0.5) * 0.3))) * 10) / 10;
+        const newHydration = Math.round(Math.max(70, Math.min(100, prev.hydration + (Math.random() - 0.5) * 3)));
+        const newStress = Math.round(Math.max(10, Math.min(50, prev.stress + (Math.random() - 0.5) * 5)));
+        
+        // Validate all values are valid numbers
+        if ([newSpo2, newHeartRate, newRespiratoryRate, newTemperature, newHydration, newStress].some(v => isNaN(v))) {
+          return prev;
+        }
+        
+        return {
+          ...prev,
+          spo2: newSpo2,
+          heartRate: newHeartRate,
+          respiratoryRate: newRespiratoryRate,
+          temperature: newTemperature,
+          hydration: newHydration,
+          stress: newStress
+        };
+      });
+    }, VITALS_UPDATE_INTERVAL_MS);
 
     return () => clearInterval(interval);
   }, []);
@@ -86,7 +103,7 @@ export function HomeDashboard() {
               <h1 className={`text-2xl font-bold bg-gradient-to-r ${isDark ? 'from-blue-400 to-purple-400' : 'from-blue-600 to-purple-600'} bg-clip-text text-transparent`}>
                 VitalSense
               </h1>
-              <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>{currentDate}</p>
+              <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{currentDate}</p>
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right mr-2">

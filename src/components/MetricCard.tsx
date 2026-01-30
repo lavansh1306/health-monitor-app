@@ -1,7 +1,11 @@
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode, useState, useEffect, useId } from 'react';
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
 import { useTheme } from '../contexts/ThemeContext';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+
+// Animation constants
+const ANIMATION_DURATION_MS = 1000;
+const ANIMATION_STEPS = 30;
 
 interface MetricCardProps {
   icon: ReactNode;
@@ -33,24 +37,27 @@ export function MetricCard({
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const [displayValue, setDisplayValue] = useState(animate ? 0 : value);
+  const gradientId = useId();
 
   // Animate value on mount
   useEffect(() => {
     if (!animate) return;
-    const duration = 1000;
-    const steps = 30;
-    const increment = value / steps;
+    let isMounted = true;
+    const increment = value / ANIMATION_STEPS;
     let current = 0;
     const timer = setInterval(() => {
       current += increment;
       if (current >= value) {
-        setDisplayValue(value);
+        if (isMounted) setDisplayValue(value);
         clearInterval(timer);
       } else {
-        setDisplayValue(Math.round(current));
+        if (isMounted) setDisplayValue(Math.round(current));
       }
-    }, duration / steps);
-    return () => clearInterval(timer);
+    }, ANIMATION_DURATION_MS / ANIMATION_STEPS);
+    return () => {
+      isMounted = false;
+      clearInterval(timer);
+    };
   }, [value, animate]);
 
   const colorClasses = {
@@ -171,7 +178,7 @@ export function MetricCard({
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
               <defs>
-                <linearGradient id={`gradient-${color}`} x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={currentColors.stroke} stopOpacity={0.3}/>
                   <stop offset="100%" stopColor={currentColors.stroke} stopOpacity={0}/>
                 </linearGradient>
@@ -192,7 +199,7 @@ export function MetricCard({
                 dataKey="value"
                 stroke={currentColors.stroke}
                 strokeWidth={2}
-                fill={`url(#gradient-${color})`}
+                fill={`url(#${gradientId})`}
               />
             </AreaChart>
           </ResponsiveContainer>
