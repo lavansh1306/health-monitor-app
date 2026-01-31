@@ -23,7 +23,7 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen pb-20 dark:bg-gray-900 bg-gray-50 transition-colors duration-300">
+      <div className="min-h-screen pb-20 bg-black text-white transition-colors duration-300 dark">
         <div className="mx-auto max-w-lg">
           {activeScreen === 'home' && <HomeDashboard />}
           {activeScreen === 'insights' && <HealthInsights />}
