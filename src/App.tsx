@@ -57,7 +57,7 @@ function AppContent() {
 
   // User is authenticated - show main app
   return (
-    <div className="min-h-screen pb-20 dark:bg-gray-900 bg-gray-50 transition-colors duration-300">
+    <div className="min-h-screen pb-20 bg-black text-white transition-colors duration-300 dark">
       <div className="mx-auto max-w-lg">
         {activeScreen === 'home' && <HomeDashboard />}
         {activeScreen === 'insights' && <HealthInsights />}
@@ -67,18 +67,6 @@ function AppContent() {
         {activeScreen === 'profile' && <ProfileSettings />}
         
         <BottomNav activeScreen={activeScreen} onNavigate={setActiveScreen} />
-    <ThemeProvider>
-      <div className="min-h-screen pb-20 bg-black text-white transition-colors duration-300 dark">
-        <div className="mx-auto max-w-lg">
-          {activeScreen === 'home' && <HomeDashboard />}
-          {activeScreen === 'insights' && <HealthInsights />}
-          {activeScreen === 'trends' && <TrendsHistory />}
-          {activeScreen === 'experimental' && <ExperimentalFeatures />}
-          {activeScreen === 'device' && <DeviceStatus />}
-          {activeScreen === 'profile' && <ProfileSettings />}
-          
-          <BottomNav activeScreen={activeScreen} onNavigate={setActiveScreen} />
-        </div>
       </div>
     </div>
   );
