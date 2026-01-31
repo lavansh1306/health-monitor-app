@@ -1,166 +1,320 @@
-import { AlertTriangle, Wind, Activity, Moon, Battery, TrendingUp, BarChart3, Heart, Sun } from 'lucide-react';
+import { AlertTriangle, Wind, Activity, Moon, Battery, TrendingUp, BarChart3, Heart, Sun, Info, Zap, Shield } from 'lucide-react';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
+import { MetricGridCard } from './MetricGridCard';
+import { ParticleBackground } from './ParticleBackground';
 
-interface InsightCardProps {
-  icon: React.ReactNode;
+interface InsightMetric {
+  id: string;
   title: string;
   score: number;
+  maxScore: number;
   riskLevel: 'low' | 'medium' | 'high';
+  icon: React.ReactNode;
+  trend: 'up' | 'down' | 'stable';
   description: string;
-}
-
-function InsightCard({ icon, title, score, riskLevel, description }: InsightCardProps) {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
-
-  const getColorClasses = () => {
-    if (riskLevel === 'low') return {
-      bg: isDark ? 'bg-emerald-500/10' : 'bg-emerald-50',
-      border: isDark ? 'border-emerald-500/30' : 'border-emerald-200',
-      text: isDark ? 'text-emerald-400' : 'text-emerald-700',
-      badge: isDark ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700',
-      icon: isDark ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-600'
-    };
-    if (riskLevel === 'medium') return {
-      bg: isDark ? 'bg-amber-500/10' : 'bg-amber-50',
-      border: isDark ? 'border-amber-500/30' : 'border-amber-200',
-      text: isDark ? 'text-amber-400' : 'text-amber-700',
-      badge: isDark ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700',
-      icon: isDark ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-600'
-    };
-    return {
-      bg: isDark ? 'bg-red-500/10' : 'bg-red-50',
-      border: isDark ? 'border-red-500/30' : 'border-red-200',
-      text: isDark ? 'text-red-400' : 'text-red-700',
-      badge: isDark ? 'bg-red-500/20 text-red-400' : 'bg-red-100 text-red-700',
-      icon: isDark ? 'bg-red-500/20 text-red-400' : 'bg-red-100 text-red-600'
-    };
-  };
-
-  const colors = getColorClasses();
-
-  return (
-    <div className={`${colors.bg} border ${colors.border} rounded-2xl p-4 transition-all hover:shadow-lg`}>
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-start gap-3">
-          <div className={`w-10 h-10 ${colors.icon} rounded-xl flex items-center justify-center flex-shrink-0`}>
-            {icon}
-          </div>
-          <div className="flex-1">
-            <h3 className={`font-medium text-sm mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{title}</h3>
-            <p className={`text-xs leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{description}</p>
-          </div>
-        </div>
-      </div>
-      <div className="flex items-center justify-between mt-4">
-        <span className={`text-2xl font-bold ${colors.text}`}>{score}</span>
-        <span className={`text-xs px-3 py-1 ${colors.badge} rounded-full capitalize font-medium`}>
-          {riskLevel} Risk
-        </span>
-      </div>
-    </div>
-  );
 }
 
 export function HealthInsights() {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
+  const [showParticles, setShowParticles] = useState(true);
 
-  const insights = [
+  const metricsData: InsightMetric[] = [
     {
-      icon: <AlertTriangle className="w-5 h-5" />,
-      title: 'Illness Risk Flag',
-      score: 12,
-      riskLevel: 'low' as const,
-      description: 'Viral and respiratory illness screening indicator based on vital patterns.'
-    },
-    {
-      icon: <Wind className="w-5 h-5" />,
-      title: 'Early Hypoxia Detection',
-      score: 8,
-      riskLevel: 'low' as const,
-      description: 'Early screening for oxygen deficiency and respiratory distress patterns.'
-    },
-    {
-      icon: <Activity className="w-5 h-5" />,
-      title: 'Oxygen Desaturation Events',
-      score: 2,
-      riskLevel: 'low' as const,
-      description: 'Detected instances of blood oxygen level drops during monitoring.'
-    },
-    {
-      icon: <Moon className="w-5 h-5" />,
+      id: 'breathing',
       title: 'Breathing Irregularity',
       score: 34,
-      riskLevel: 'medium' as const,
-      description: 'Sleep apnea and breathing pattern screening during rest periods.'
+      maxScore: 100,
+      riskLevel: 'medium',
+      icon: <Wind className="w-5 h-5" />,
+      trend: 'up',
+      description: 'Elevated respiratory rate variability detected. Sleep apnea screening shows irregular patterns during rest periods.',
     },
     {
-      icon: <Battery className="w-5 h-5" />,
+      id: 'illness',
+      title: 'Illness Risk Flag',
+      score: 12,
+      maxScore: 100,
+      riskLevel: 'low',
+      icon: <AlertTriangle className="w-5 h-5" />,
+      trend: 'down',
+      description: 'Viral and respiratory illness screening indicator based on vital patterns. Currently in healthy range.',
+    },
+    {
+      id: 'hypoxia',
+      title: 'Early Hypoxia Detection',
+      score: 8,
+      maxScore: 100,
+      riskLevel: 'low',
+      icon: <Activity className="w-5 h-5" />,
+      trend: 'stable',
+      description: 'Early screening for oxygen deficiency and respiratory distress patterns. All metrics normal.',
+    },
+    {
+      id: 'desaturation',
+      title: 'Oxygen Desaturation Events',
+      score: 2,
+      maxScore: 100,
+      riskLevel: 'low',
+      icon: <Moon className="w-5 h-5" />,
+      trend: 'stable',
+      description: 'Detected instances of blood oxygen level drops during monitoring. Minimal occurrences detected.',
+    },
+    {
+      id: 'fatigue',
       title: 'Fatigue & Stress Index',
       score: 18,
-      riskLevel: 'low' as const,
-      description: 'Overall wellness indicator based on vital stability and recovery patterns.'
+      maxScore: 100,
+      riskLevel: 'low',
+      icon: <Battery className="w-5 h-5" />,
+      trend: 'stable',
+      description: 'Overall wellness indicator based on vital stability and recovery patterns.',
     },
     {
-      icon: <TrendingUp className="w-5 h-5" />,
+      id: 'recovery',
       title: 'Recovery Rate Score',
       score: 85,
-      riskLevel: 'low' as const,
-      description: 'How quickly your heart rate and oxygen levels return to normal after activity.'
+      maxScore: 100,
+      riskLevel: 'low',
+      icon: <TrendingUp className="w-5 h-5" />,
+      trend: 'stable',
+      description: 'How quickly your heart rate and oxygen levels return to normal after activity.',
     },
     {
-      icon: <BarChart3 className="w-5 h-5" />,
+      id: 'stability',
       title: 'Vital Stability Index',
       score: 92,
-      riskLevel: 'low' as const,
-      description: 'Trend-based assessment of overall vital sign consistency and stability.'
+      maxScore: 100,
+      riskLevel: 'low',
+      icon: <BarChart3 className="w-5 h-5" />,
+      trend: 'stable',
+      description: 'Trend-based assessment of overall vital sign consistency and stability.',
     },
     {
-      icon: <Heart className="w-5 h-5" />,
+      id: 'fitness',
       title: 'Cardio-Respiratory Fitness',
       score: 78,
-      riskLevel: 'low' as const,
-      description: 'Combined heart and lung function screening score for overall fitness.'
-    }
+      maxScore: 100,
+      riskLevel: 'low',
+      icon: <Heart className="w-5 h-5" />,
+      trend: 'stable',
+      description: 'Combined heart and lung function screening score for overall fitness.',
+    },
   ];
 
+  // Sort by risk level: High → Medium → Low
+  const sortedMetrics = metricsData.sort((a, b) => {
+    const riskOrder = { high: 0, medium: 1, low: 2 };
+    return riskOrder[a.riskLevel] - riskOrder[b.riskLevel];
+  });
+
+  // Calculate overall health score
+  const avgScore = Math.round(metricsData.reduce((acc, m) => acc + m.score, 0) / metricsData.length);
+  const healthStatus = avgScore > 70 ? 'Excellent' : avgScore > 50 ? 'Good' : avgScore > 30 ? 'Fair' : 'Needs Attention';
+  const healthColor = avgScore > 70 ? '#10b981' : avgScore > 50 ? '#f59e0b' : '#ef4444';
+
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#000000',
+        transition: 'background-color 300ms',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Particle Background */}
+      {showParticles && <ParticleBackground isDark={isDark} />}
+
       {/* Header */}
-      <div className={`sticky top-0 z-10 backdrop-blur-xl border-b ${isDark ? 'bg-gray-900/80 border-gray-800' : 'bg-white/80 border-gray-200'}`}>
-        <div className="px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Health Insights</h1>
-              <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Derived risk screening indicators</p>
-            </div>
-            <button
-              onClick={toggleTheme}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                isDark 
-                  ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+      <motion.div
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 20,
+          backdropFilter: 'blur(16px)',
+          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          backgroundColor: 'rgba(0, 0, 0, 0.95)',
+          padding: '12px 16px',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <motion.div
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 3, repeat: Infinity }}
+          >
+            <h1
+              style={{
+                fontSize: '20px',
+                fontWeight: 'bold',
+                background: `linear-gradient(135deg, ${healthColor}, ${isDark ? '#60a5fa' : '#3b82f6'})`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                margin: 0,
+              }}
             >
-              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
+              ⚡ Health Insights
+            </h1>
+            <p
+              style={{
+                fontSize: '11px',
+                color: '#9ca3af',
+                margin: '2px 0 0 0',
+              }}
+            >
+              Real-time health analytics
+            </p>
+          </motion.div>
+          <motion.button
+            whileHover={{ scale: 1.1, rotate: 180 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={toggleTheme}
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '12px',
+              border: 'none',
+              backgroundColor: 'rgba(255,255,255,0.1)',
+              color: '#fbbf24',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backdropFilter: 'blur(8px)',
+              flexShrink: 0,
+            }}
+          >
+            <Sun className="w-5 h-5" />
+          </motion.button>
+        </div>
+      </motion.div>
+
+      <div style={{ padding: '16px 12px 100px 12px', position: 'relative', zIndex: 10 }}>
+        {/* Overall Health Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          style={{
+            background: `linear-gradient(135deg, ${healthColor}20, ${healthColor}10)`,
+            border: `2px solid ${healthColor}`,
+            borderRadius: '20px',
+            padding: '20px',
+            marginBottom: '20px',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          <motion.div
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 3, repeat: Infinity }}
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: '200px',
+              height: '200px',
+              background: `radial-gradient(circle, ${healthColor}40, transparent)`,
+              pointerEvents: 'none',
+            }}
+          />
+
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+              <Shield style={{ width: '20px', height: '20px', color: healthColor }} />
+              <span style={{ fontSize: '12px', color: '#9ca3af' }}>Overall Health Status</span>
+            </div>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+              style={{
+                fontSize: '42px',
+                fontWeight: 'bold',
+                color: healthColor,
+                marginBottom: '8px',
+              }}
+            >
+              {avgScore}%
+            </motion.div>
+            <span style={{ fontSize: '14px', fontWeight: '600', color: healthColor }}>
+              Status: {healthStatus}
+            </span>
           </div>
-        </div>
-      </div>
+        </motion.div>
 
-      <div className="px-4 py-6 space-y-4">
-        {insights.map((insight, index) => (
-          <InsightCard key={index} {...insight} />
-        ))}
+        {/* Metrics Grid - 2 columns */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '16px',
+            marginTop: '20px',
+          }}
+        >
+          {sortedMetrics.map((metric, idx) => (
+            <MetricGridCard
+              key={metric.id}
+              title={metric.title}
+              score={metric.score}
+              maxScore={metric.maxScore}
+              riskLevel={metric.riskLevel}
+              icon={metric.icon}
+              trend={metric.trend}
+              description={metric.description}
+              index={idx}
+            />
+          ))}
+        </motion.div>
 
-        {/* Footer Notice */}
-        <div className={`rounded-2xl p-4 border ${isDark ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-100 border-gray-200'} mt-6`}>
-          <p className={`text-xs leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-            These insights are screening indicators only and do not constitute medical diagnosis. 
-            Consult healthcare professionals for interpretation and medical advice.
+        {/* Footer Info */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          style={{
+            borderRadius: '16px',
+            padding: '14px',
+            border: `1px solid ${isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
+            background: isDark ? 'rgba(59, 130, 246, 0.08)' : 'rgba(59, 130, 246, 0.05)',
+            marginTop: '20px',
+            display: 'flex',
+            gap: '10px',
+            backdropFilter: 'blur(8px)',
+          }}
+        >
+          <motion.div
+            animate={{ rotate: [0, 360] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+          >
+            <Info
+              style={{
+                width: '16px',
+                height: '16px',
+                flexShrink: 0,
+                color: isDark ? '#60a5fa' : '#2563eb',
+              }}
+            />
+          </motion.div>
+          <p
+            style={{
+              fontSize: '11px',
+              lineHeight: '1.5',
+              color: isDark ? 'rgba(219, 234, 254, 0.8)' : '#1e40af',
+              margin: 0,
+            }}
+          >
+            These insights are screening indicators only. Consult healthcare professionals for medical decisions.
           </p>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
