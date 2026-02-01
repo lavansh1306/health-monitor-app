@@ -85,37 +85,49 @@ export function MetricGridCard({
   index,
 }: MetricGridCardProps) {
   const { theme } = useTheme();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const isDark = theme === 'dark';
 
   const getRiskColor = () => {
-    if (riskLevel === 'low')
+    if (riskLevel === 'low') {
       return {
         border: '#10b981',
-        bg: 'rgba(16, 185, 129, 0.12)',
-        gradient: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.08))',
+        bg: isDark ? 'rgba(16, 185, 129, 0.12)' : 'rgba(16, 185, 129, 0.25)',
+        gradient: isDark 
+          ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.08))'
+          : 'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1))',
         bar: '#10b981',
-        score: '#6ee7b7',
-        badge: 'rgba(16, 185, 129, 0.25)',
+        score: isDark ? '#6ee7b7' : '#047857',
+        badge: isDark ? 'rgba(16, 185, 129, 0.25)' : 'rgba(16, 185, 129, 0.35)',
+        text: isDark ? '#d1fae5' : '#065f46',
       };
-    if (riskLevel === 'medium')
+    }
+    if (riskLevel === 'medium') {
       return {
         border: '#f59e0b',
-        bg: 'rgba(245, 158, 11, 0.12)',
-        gradient: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.08))',
+        bg: isDark ? 'rgba(245, 158, 11, 0.12)' : 'rgba(245, 158, 11, 0.25)',
+        gradient: isDark
+          ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.08))'
+          : 'linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1))',
         bar: '#f59e0b',
-        score: '#fcd34d',
-        badge: 'rgba(245, 158, 11, 0.25)',
+        score: isDark ? '#fcd34d' : '#b45309',
+        badge: isDark ? 'rgba(245, 158, 11, 0.25)' : 'rgba(245, 158, 11, 0.35)',
+        text: isDark ? '#fef3c7' : '#78350f',
       };
+    }
     return {
       border: '#ef4444',
-      bg: 'rgba(239, 68, 68, 0.12)',
-      gradient: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.08))',
+      bg: isDark ? 'rgba(239, 68, 68, 0.12)' : 'rgba(239, 68, 68, 0.25)',
+      gradient: isDark
+        ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.08))'
+        : 'linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1))',
       bar: '#ef4444',
-      score: '#fca5a5',
-      badge: 'rgba(239, 68, 68, 0.25)',
+      score: isDark ? '#fca5a5' : '#991b1b',
+      badge: isDark ? 'rgba(239, 68, 68, 0.25)' : 'rgba(239, 68, 68, 0.35)',
+      text: isDark ? '#fee2e2' : '#7f1d1d',
     };
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const colors = getRiskColor();
   const scorePercentage = (score / maxScore) * 100;
 
@@ -199,7 +211,7 @@ export function MetricGridCard({
               style={{
                 fontSize: '12px',
                 fontWeight: 'bold',
-                color: '#ffffff',
+                color: colors.text,
                 margin: '0 0 6px 0',
                 lineHeight: '1.2',
               }}
@@ -245,7 +257,7 @@ export function MetricGridCard({
               style={{
                 height: '3px',
                 borderRadius: '1.5px',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)',
                 overflow: 'hidden',
                 position: 'relative',
               }}

@@ -116,83 +116,9 @@ export function HealthInsights() {
   const healthColor = avgScore > 70 ? '#10b981' : avgScore > 50 ? '#f59e0b' : '#ef4444';
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        backgroundColor: '#000000',
-        transition: 'background-color 300ms',
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
+    <div>
       {/* Particle Background */}
       {showParticles && <ParticleBackground isDark={isDark} />}
-
-      {/* Header */}
-      <motion.div
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6 }}
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 20,
-          backdropFilter: 'blur(16px)',
-          borderBottom: '1px solid rgba(255,255,255,0.1)',
-          backgroundColor: 'rgba(0, 0, 0, 0.95)',
-          padding: '12px 16px',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <motion.div
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 3, repeat: Infinity }}
-          >
-            <h1
-              style={{
-                fontSize: '20px',
-                fontWeight: 'bold',
-                background: `linear-gradient(135deg, ${healthColor}, ${isDark ? '#60a5fa' : '#3b82f6'})`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                margin: 0,
-              }}
-            >
-              ⚡ Health Insights
-            </h1>
-            <p
-              style={{
-                fontSize: '11px',
-                color: '#9ca3af',
-                margin: '2px 0 0 0',
-              }}
-            >
-              Real-time health analytics
-            </p>
-          </motion.div>
-          <motion.button
-            whileHover={{ scale: 1.1, rotate: 180 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={toggleTheme}
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '12px',
-              border: 'none',
-              backgroundColor: 'rgba(255,255,255,0.1)',
-              color: '#fbbf24',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backdropFilter: 'blur(8px)',
-              flexShrink: 0,
-            }}
-          >
-            <Sun className="w-5 h-5" />
-          </motion.button>
-        </div>
-      </motion.div>
 
       <div style={{ padding: '16px 12px 100px 12px', position: 'relative', zIndex: 10 }}>
         {/* Overall Health Card */}

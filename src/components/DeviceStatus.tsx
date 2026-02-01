@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Bluetooth, Wifi, Battery, Signal, CheckCircle, AlertCircle, Sun, Moon, Cpu, Cloud, Zap, RefreshCw } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { motion } from 'framer-motion';
 
 interface SystemConnection {
   id: string;
@@ -70,225 +71,199 @@ export function DeviceStatus() {
     return <AlertCircle className={`w-4 h-4 ${isDark ? 'text-red-400' : 'text-red-600'}`} />;
   };
 
+  const getStatusColor = (status: string) => {
+    if (status === 'connected') return isDark ? 'bg-emerald-500/20 border-emerald-500/30' : 'bg-emerald-50 border-emerald-200';
+    if (status === 'warning') return isDark ? 'bg-amber-500/20 border-amber-500/30' : 'bg-amber-50 border-amber-200';
+    return isDark ? 'bg-red-500/20 border-red-500/30' : 'bg-red-50 border-red-200';
+  };
+
+  const StatusCard = ({ conn }: { conn: SystemConnection }) => {
+    const Icon = conn.icon;
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ scale: 1.02, y: -5 }}
+        transition={{ type: 'spring', stiffness: 300 }}
+        className={`rounded-2xl p-4 border transition-all ${getStatusColor(conn.status)}`}
+      >
+        <div className="flex items-start justify-between mb-3">
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+            conn.status === 'connected'
+              ? isDark ? 'bg-emerald-500/20' : 'bg-emerald-100'
+              : conn.status === 'warning'
+              ? isDark ? 'bg-amber-500/20' : 'bg-amber-100'
+              : isDark ? 'bg-red-500/20' : 'bg-red-100'
+          }`}>
+            <Icon className={`w-5 h-5 ${
+              conn.status === 'connected'
+                ? isDark ? 'text-emerald-400' : 'text-emerald-600'
+                : conn.status === 'warning'
+                ? isDark ? 'text-amber-400' : 'text-amber-600'
+                : isDark ? 'text-red-400' : 'text-red-600'
+            }`} />
+          </div>
+          {getStatusIcon(conn.status)}
+        </div>
+        <h3 className={`font-semibold text-sm mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{conn.name}</h3>
+        <p className={`text-xs mb-3 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{conn.description}</p>
+        <div className="flex items-center justify-between">
+          <span className={`text-xs font-medium ${
+            conn.status === 'connected'
+              ? isDark ? 'text-emerald-400' : 'text-emerald-600'
+              : conn.status === 'warning'
+              ? isDark ? 'text-amber-400' : 'text-amber-600'
+              : isDark ? 'text-red-400' : 'text-red-600'
+          }`}>
+            {conn.latency}ms
+          </span>
+          <motion.div
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className={`w-2 h-2 rounded-full ${
+              conn.status === 'connected'
+                ? 'bg-emerald-500'
+                : conn.status === 'warning'
+                ? 'bg-amber-500'
+                : 'bg-red-500'
+            }`}
+          />
+        </div>
+      </motion.div>
+    );
+  };
+
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div>
       {/* Header */}
-      <div className={`sticky top-0 z-10 backdrop-blur-xl border-b ${isDark ? 'bg-gray-900/80 border-gray-800' : 'bg-white/80 border-gray-200'}`}>
-        <div className="px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
-                <Bluetooth className={`w-5 h-5 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
-              </div>
-              <div>
-                <h1 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Device Status</h1>
-                <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Sensor & connectivity health</p>
-              </div>
-            </div>
-            <button
-              onClick={toggleTheme}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                isDark 
-                  ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`-mx-4 -mt-6 px-4 py-4 mb-6 sticky top-0 z-30 backdrop-blur-2xl ${
+          isDark ? 'bg-gray-900/80 border-gray-800/50' : 'bg-white/80 border-gray-200/50'
+        } border-b`}
+      >
+        <div className="flex items-center gap-3">
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+            isDark ? 'bg-blue-500/20' : 'bg-blue-100'
+          }`}>
+            <Bluetooth className={`w-6 h-6 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+          </div>
+          <div>
+            <h1 className={`text-2xl font-bold bg-gradient-to-r ${
+              isDark ? 'from-blue-300 to-cyan-300' : 'from-blue-600 to-cyan-600'
+            } bg-clip-text text-transparent`}>
+              Device Status
+            </h1>
+            <p className={`text-xs font-medium ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Sensor & connectivity health</p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="px-4 py-6 space-y-6">
-        {/* Real-time Connectivity Monitor */}
-        <div className={`rounded-2xl border overflow-hidden ${isDark ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'}`}>
-          <div className={`p-4 border-b ${isDark ? 'border-gray-700' : 'border-gray-100'}`}>
+      <div className="space-y-6">
+        {/* Overall Device Health */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className={`rounded-3xl p-6 border overflow-hidden relative ${
+            isDark ? 'bg-gradient-to-br from-gray-800 to-gray-800/50 border-gray-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'
+          } shadow-xl`}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className={`text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Overall Health</h2>
+              <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>All systems operational</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />
+              <span className={`text-sm font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Online</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div className={`p-3 rounded-xl ${isDark ? 'bg-blue-500/20' : 'bg-blue-50'}`}>
+              <Signal className={`w-4 h-4 mb-2 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+              <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{deviceData.signalQuality}%</p>
+              <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Signal</p>
+            </div>
+            <div className={`p-3 rounded-xl ${isDark ? 'bg-emerald-500/20' : 'bg-emerald-50'}`}>
+              <Battery className={`w-4 h-4 mb-2 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+              <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{deviceData.batteryLevel}%</p>
+              <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Battery</p>
+            </div>
+            <div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-500/20' : 'bg-cyan-50'}`}>
+              <Zap className={`w-4 h-4 mb-2 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`} />
+              <p className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Optimal</p>
+              <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Status</p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* System Connectivity Grid */}
+        <div>
+          <h2 className={`text-sm font-bold uppercase tracking-wider mb-3 px-1 ${
+            isDark ? 'text-gray-500' : 'text-gray-400'
+          }`}>System Connectivity</h2>
+          <motion.div
+            className="grid grid-cols-2 gap-3"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.1
+                }
+              }
+            }}
+          >
+            {connections.map((conn) => (
+              <StatusCard key={conn.id} conn={conn} />
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Device Details */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className={`rounded-2xl p-4 border ${isDark ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50 border-gray-200'}`}
+        >
+          <h3 className={`font-semibold text-sm mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>Device Information</h3>
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>System Connectivity</h3>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                <span className={`text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Live</span>
-              </div>
+              <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Firmware Version</span>
+              <span className={`text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-800'}`}>{deviceData.firmwareVersion}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Last Sync</span>
+              <span className={`text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-800'}`}>{deviceData.lastSync}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Sensor Status</span>
+              <span className={`text-xs font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{deviceData.sensorStatus}</span>
             </div>
           </div>
-
-          <div className="p-4 space-y-3">
-            {connections.map((conn) => {
-              const Icon = conn.icon;
-              return (
-                <div 
-                  key={conn.id}
-                  className={`flex items-center justify-between p-3 rounded-xl transition-all ${isDark ? 'bg-gray-700/50 hover:bg-gray-700' : 'bg-gray-50 hover:bg-gray-100'}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                      conn.status === 'connected'
-                        ? isDark ? 'bg-emerald-500/20' : 'bg-emerald-100'
-                        : conn.status === 'warning'
-                        ? isDark ? 'bg-amber-500/20' : 'bg-amber-100'
-                        : isDark ? 'bg-red-500/20' : 'bg-red-100'
-                    }`}>
-                      <Icon className={`w-5 h-5 ${
-                        conn.status === 'connected'
-                          ? isDark ? 'text-emerald-400' : 'text-emerald-600'
-                          : conn.status === 'warning'
-                          ? isDark ? 'text-amber-400' : 'text-amber-600'
-                          : isDark ? 'text-red-400' : 'text-red-600'
-                      }`} />
-                    </div>
-                    <div>
-                      <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{conn.name}</p>
-                      <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{conn.description}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="text-right">
-                      <p className={`text-lg font-bold ${getLatencyColor(conn.latency)}`}>{conn.latency}</p>
-                      <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>ms</p>
-                    </div>
-                    {getStatusIcon(conn.status)}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Overall status bar */}
-          <div className={`p-4 border-t ${isDark ? 'border-gray-700 bg-gray-700/30' : 'border-gray-100 bg-gray-50/50'}`}>
-            <div className="flex items-center justify-between mb-2">
-              <span className={`text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Overall Health</span>
-              <span className={`text-xs font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
-                {connections.filter(c => c.status === 'connected').length}/{connections.length} Active
-              </span>
-            </div>
-            <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-gray-600' : 'bg-gray-200'}`}>
-              <div 
-                className="h-full bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full transition-all duration-500"
-                style={{ width: `${(connections.filter(c => c.status === 'connected').length / connections.length) * 100}%` }}
-              ></div>
-            </div>
-          </div>
-        </div>
-
-        {/* Signal Quality */}
-        <div className={`rounded-2xl border ${isDark ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'} p-4`}>
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-emerald-500/20' : 'bg-emerald-100'}`}>
-                <Signal className={`w-5 h-5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
-              </div>
-              <div>
-                <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Signal Quality</h3>
-                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Real-time sensor accuracy</p>
-              </div>
-            </div>
-            <span className={`text-2xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{deviceData.signalQuality}%</span>
-          </div>
-
-          <div className="mb-3">
-            <div className={`h-3 rounded-full overflow-hidden ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}>
-              <div 
-                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all"
-                style={{ width: `${deviceData.signalQuality}%` }}
-              ></div>
-            </div>
-          </div>
-
-          <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-            Excellent signal quality. Sensor is positioned correctly and readings are reliable.
-          </p>
-        </div>
-
-        {/* Battery Level */}
-        <div className={`rounded-2xl border ${isDark ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'} p-4`}>
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-teal-500/20' : 'bg-teal-100'}`}>
-                <Battery className={`w-5 h-5 ${isDark ? 'text-teal-400' : 'text-teal-600'}`} />
-              </div>
-              <div>
-                <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Battery Level</h3>
-                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Sensor power status</p>
-              </div>
-            </div>
-            <span className={`text-2xl font-bold ${isDark ? 'text-teal-400' : 'text-teal-600'}`}>{deviceData.batteryLevel}%</span>
-          </div>
-
-          <div className="mb-3">
-            <div className={`h-3 rounded-full overflow-hidden ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}>
-              <div 
-                className="h-full bg-gradient-to-r from-teal-500 to-teal-400 rounded-full transition-all"
-                style={{ width: `${deviceData.batteryLevel}%` }}
-              ></div>
-            </div>
-          </div>
-
-          <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-            Approximately 18 hours of continuous monitoring remaining.
-          </p>
-        </div>
-
-        {/* Sensor Health */}
-        <div className={`rounded-2xl border ${isDark ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'} p-4`}>
-          <h3 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Sensor Health</h3>
-
-          <div className="space-y-3">
-            {['Optical Sensor', 'Temperature Sensor', 'Accelerometer'].map((sensor) => (
-              <div 
-                key={sensor}
-                className={`flex items-center justify-between p-3 rounded-xl border ${isDark ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-emerald-50 border-emerald-200'}`}
-              >
-                <span className={`text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>{sensor}</span>
-                <div className="flex items-center gap-2">
-                  <span className={`text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>Optimal</span>
-                  <CheckCircle className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Device Info */}
-        <div className={`rounded-2xl border ${isDark ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'} p-4`}>
-          <h3 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Device Information</h3>
-
-          <div className="space-y-3">
-            {[
-              { label: 'Model', value: 'VitalSense Pro v2' },
-              { label: 'Firmware', value: deviceData.firmwareVersion },
-              { label: 'Serial Number', value: 'VS2-8472-A39' },
-              { label: 'Last Calibration', value: '3 days ago' },
-            ].map((item, i) => (
-              <div key={item.label}>
-                <div className="flex items-center justify-between py-2">
-                  <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{item.label}</span>
-                  <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{item.value}</span>
-                </div>
-                {i < 3 && <div className={`h-px ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}></div>}
-              </div>
-            ))}
-          </div>
-        </div>
+        </motion.div>
 
         {/* Action Buttons */}
-        <div className="space-y-3">
-          <button className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl font-medium transition-all ${
-            isDark 
-              ? 'bg-blue-500 text-white hover:bg-blue-600' 
-              : 'bg-blue-600 text-white hover:bg-blue-700'
-          } shadow-lg shadow-blue-500/25`}>
-            <RefreshCw className="w-5 h-5" />
-            Reconnect Sensor
-          </button>
-          <button className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl font-medium transition-all ${
-            isDark 
-              ? 'bg-gray-700 text-white hover:bg-gray-600' 
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}>
-            <Zap className="w-5 h-5" />
-            Calibrate Sensor
-          </button>
-        </div>
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className={`w-full py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 border ${
+            isDark
+              ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border-blue-500/30'
+              : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200'
+          }`}
+        >
+          <RefreshCw className="w-4 h-4" />
+          Sync Now
+        </motion.button>
       </div>
     </div>
   );
