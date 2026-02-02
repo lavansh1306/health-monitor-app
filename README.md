@@ -29,10 +29,10 @@ A modern, responsive health monitoring application built with React and TypeScri
 - **Framer Motion** - Animation library
 
 ### UI Components
-- **Radix UI** - Accessible, unstyled component library
+- **Radix UI** - Accessible, unstyled coponent library
 - **Lucide React** - Beautiful icon set
-- **Recharts** - Composable charting library
-- **shadcn/ui** - Re-usable component collection
+- **Recharts** - Comosable charting library
+- **shadcn/ui** - Re-usable component collectn
 
 ### Backend & Data
 - **Supabase** - Backend as a Service (BaaS)
