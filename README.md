@@ -1,535 +1,241 @@
-# VitalSense - Health Monitoring Application UI
+# 🏥 Health Monitor App
 
-A modern, responsive health monitoring dashboard built with React, TypeScript, and Tailwind CSS. VitalSense provides real-time vital signs monitoring, health insights, trend analysis, and early screening detection for proactive wellness tracking.
+A modern, responsive health monitoring application built with React and TypeScript. Track your health metrics, monitor vitals, and maintain a healthy lifestyle with an intuitive interface.
 
-> **Disclaimer**: This application is for wellness monitoring and research purposes only. It does not diagnose, treat, or cure any medical condition. Always consult a qualified healthcare professional for medical advice.
+[![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.4.1-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.6-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-2.93.3-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 
----
+## ✨ Features
 
-## 🎯 Features
+- 📊 **Real-time Health Metrics Tracking** - Monitor heart rate, blood pressure, steps, and more
+- 🎨 **Beautiful UI/UX** - Modern design based on professional Figma mockups
+- 📱 **Responsive Design** - Works seamlessly on desktop, tablet, and mobile devices
+- 🌙 **Dark Mode Support** - Toggle between light and dark themes
+- 🔐 **Secure Authentication** - Powered by Supabase
+- 📈 **Data Visualization** - Interactive charts and graphs using Recharts
+- ✨ **Smooth Animations** - Enhanced user experience with Framer Motion
+- 🎯 **Experimental Features** - Access to cutting-edge health monitoring tools
 
-### Core Capabilities
-- **Real-time Vital Signs Monitoring** - Track SpO₂, heart rate, respiratory rate, and other key metrics
-- **Health Insights & Analysis** - AI-powered early screening and health awareness features
-- **Trend Tracking** - Visualize health patterns with detailed historical data analysis
-- **Multi-Device Support** - Connect and monitor multiple wearable devices
-- **Dark/Light Theme** - Full theme support with smooth transitions
-- **Experimental Features** - Beta tools for advanced health screening and analysis
+## 🖥️ UI Overview — What's Shown & How It's Derived
 
-### User Features
-- **Landing Page** - Engaging introduction with feature showcase
-- **Secure Authentication** - Mock authentication system with local storage
-- **Onboarding Flow** - Guided setup with important health disclaimers
-- **User Profiles** - Customizable settings and preferences
-- **Responsive Design** - Optimized for mobile, tablet, and desktop
-
----
-
-## 📁 Project Structure
-
-```
-Health Monitoring App UI/
-├── src/
-│   ├── components/
-│   │   ├── ui/                          # Radix UI primitive components
-│   │   ├── AnimatedMetricCard.tsx       # Animated metric display
-│   │   ├── AuthScreen.tsx               # Legacy auth (use Login.tsx)
-│   │   ├── BottomNav.tsx                # Bottom navigation bar
-│   │   ├── DetailModal.tsx              # Detail view modal
-│   │   ├── DeviceStatus.tsx             # Device connectivity status
-│   │   ├── ExperimentalFeatures.tsx     # Beta health indicators
-│   │   ├── HealthInsights.tsx           # Health analysis section
-│   │   ├── HealthMetricCard.tsx         # Reusable metric card
-│   │   ├── HealthRiskRing.tsx           # Circular risk visualization
-│   │   ├── HomeDashboard.tsx            # Main dashboard view
-│   │   ├── MetricCard.tsx               # Basic metric display
-│   │   ├── MetricGridCard.tsx           # Grid-based metric layout
-│   │   ├── OnboardingScreen.tsx         # Onboarding flow component
-│   │   ├── PageLayout.tsx               # Page wrapper with header
-│   │   ├── ParticleBackground.tsx       # Animated background
-│   │   ├── ProfileSettings.tsx          # User settings page
-│   │   ├── SimpleGraph.tsx              # Chart component
-│   │   ├── SleepCapture.tsx             # Sleep tracking
-│   │   ├── StatusMonitor.tsx            # Status overview
-│   │   └── TrendsHistory.tsx            # Historical trend view
-│   │
-│   ├── contexts/
-│   │   ├── AuthContext.tsx              # Mock authentication context
-│   │   └── ThemeContext.tsx             # Dark/Light theme context
-│   │
-│   ├── pages/
-│   │   ├── Landing.tsx                  # Landing page
-│   │   ├── Login.tsx                    # Login/Signup page
-│   │   ├── AppDashboard.tsx             # Onboarding page wrapper
-│   │   └── Home.tsx                     # Home page (unused)
-│   │
-│   ├── lib/
-│   │   └── supabaseClient.ts            # (Legacy - not used in mock auth)
-│   │
-│   ├── styles/
-│   │   ├── globals.css                  # Global styles
-│   │   └── animations.css               # Custom animations
-│   │
-│   ├── App.tsx                          # Main app with routing
-│   ├── main.tsx                         # React DOM entry point
-│   └── index.css                        # Tailwind + base styles
-│
-├── public/
-│   └── vite.svg
-│
-├── Configuration Files
-├── package.json                         # Dependencies & scripts
-├── tsconfig.json                        # TypeScript configuration
-├── tailwind.config.ts                   # Tailwind theming
-├── vite.config.ts                       # Vite build configuration
-├── postcss.config.js                    # PostCSS for Tailwind
-│
-├── Documentation
-├── README.md                            # This file
-├── DESIGN_SYSTEM.md                     # Design system documentation
-├── REFACTORING_NOTES.md                 # Component refactoring history
-├── WORKFLOW_SETUP.md                    # Routing & auth flow guide
-│
-└── index.html                           # HTML entry point
-```
+The app is organised as a single-page application with a **fixed bottom navigation bar** and six main screens. All vital values are **simulated** (randomly fluctuated in-browser) for demonstration purposes; no real sensor data is read.
 
 ---
 
-## 🏗️ Tech Stack
+### 🏠 Home Dashboard (`HomeDashboard`)
 
-### Frontend Framework
-- **React 18.3** - UI component library
-- **TypeScript** - Type-safe JavaScript
-- **React Router v7** - Client-side routing
-- **Vite 6.4** - Fast build tool & dev server
+The first screen you see when the app loads. It is composed of four sections:
 
-### UI & Styling
-- **Tailwind CSS 3.3** - Utility-first CSS framework
-- **Radix UI** - Accessible component primitives
-  - Accordion, Dialog, Dropdown, Select, Tabs, Tooltip, etc.
-- **Lucide React** - Beautiful icon library
+| Section | What Is Shown | How It's Derived |
+|---|---|---|
+| **Header** | App name "VitalSense", current date, current time, "Live" pulse indicator | `new Date()` called on render; time re-reads from the system clock |
+| **Health Score card** | A rotating ring (conic-gradient) and a central **Risk Score** number (0–100), status badge ("All Normal") | Initial risk score is hard-coded to `15`. The ring arc is `riskScore × 2.4` degrees. Status badge colour is determined by `riskLevel` state (`normal / monitor / attention`) |
+| **Live Vitals grid** (6 cards) | Six metric cards updated every **3 seconds** | Seeded from reasonable baseline values; each tick applies a small random delta clamped within safe ranges: |
+| | • **Blood Oxygen (SpO₂)** — value in `%` | Baseline 98 %, random walk ±1 pt, clamped 94–100 % |
+| | • **Heart Rate** — value in `bpm` | Baseline 72 bpm, random walk ±2 pt, clamped 60–100 bpm |
+| | • **Respiratory Rate** — value in `/min` | Baseline 16 /min, random walk ±1 pt, clamped 12–20 /min |
+| | • **Temperature** — value in `°F` | Baseline 98.6 °F, random walk ±0.15 pt, clamped 97.5–99.5 °F |
+| | • **Hydration** — value in `%` | Baseline 85 %, random walk ±1.5 pt, clamped 70–100 % |
+| | • **Stress Index** — value `/100` | Baseline 22, random walk ±2.5 pt, clamped 10–50 |
+| **Sleep Analysis card** | Duration (7 h 42 m), Quality (86 %), Sleep Cycles (5) | Static mock values |
+| **Connectivity Status** | WiFi Connection status, Sensor Battery status (both green "connected") | Static mock values |
+| **Medical Disclaimer** | Plain-text notice | Static copy |
+
+---
+
+### 📊 Health Insights (`HealthInsights`)
+
+Shows an **Overall Health Status** score and a 2-column grid of eight risk-indicator cards, sorted high → medium → low risk.
+
+| Element | What Is Shown | How It's Derived |
+|---|---|---|
+| **Overall Health Score** | A percentage (0–100) and text label (Excellent / Good / Fair / Needs Attention) | Arithmetic mean of the eight metric scores below, compared against thresholds: >70 = Excellent, >50 = Good, >30 = Fair, else Needs Attention |
+| **Breathing Irregularity** | Score 34/100, risk: medium, trend: ↑ | Static mock value |
+| **Illness Risk Flag** | Score 12/100, risk: low, trend: ↓ | Static mock value |
+| **Early Hypoxia Detection** | Score 8/100, risk: low, trend: → | Static mock value |
+| **Oxygen Desaturation Events** | Score 2/100, risk: low, trend: → | Static mock value |
+| **Fatigue & Stress Index** | Score 18/100, risk: low, trend: → | Static mock value |
+| **Recovery Rate Score** | Score 85/100, risk: low, trend: → | Static mock value |
+| **Vital Stability Index** | Score 92/100, risk: low, trend: → | Static mock value |
+| **Cardio-Respiratory Fitness** | Score 78/100, risk: low, trend: → | Static mock value |
+| **Disclaimer footer** | Screening-only notice | Static copy |
+
+---
+
+### 📈 Trends & History (`TrendsHistory`)
+
+Shows area charts of three vitals over time with a **24 h / 7 d toggle**.
+
+| Element | What Is Shown | How It's Derived |
+|---|---|---|
+| **Time-range toggle** | 24 h (8 data points, hourly) or 7 d (7 data points, daily) | Toggle state (`daily` / `weekly`); charts re-render with the matching dataset |
+| **Blood Oxygen chart** | SpO₂ % area chart, current value 98 % | Static mock arrays (`dailyData` / `weeklyData`) |
+| **Heart Rate chart** | bpm area chart, current value 72 bpm | Same static mock arrays |
+| **Respiratory Rate chart** | breaths/min area chart, current value 16 /min | Same static mock arrays |
+| **Detected Events** | One amber "Mild SpO₂ Drop" event (Yesterday 2:34 AM · 95 % for 2 min) | Static mock event |
+
+---
+
+### 🔬 Experimental Features (`ExperimentalFeatures`)
+
+Shows six research-prototype risk cards sorted high → medium → low.
+
+| Metric Card | Score | Risk Level | How It's Derived |
+|---|---|---|---|
+| Breathing Irregularity | 42/100 | High | Static mock value |
+| Oxygen Saturation Risk | 35/100 | Medium | Static mock value |
+| Cardiac Recovery Index | 68/100 | Medium | Static mock value |
+| Stress Response Level | 22/100 | Low | Static mock value |
+| Physical Activity Score | 78/100 | Low | Static mock value |
+| Circadian Rhythm Alignment | 15/100 | Low | Static mock value |
+
+An amber warning banner and a blue informational note about risk indicators are also displayed.
+
+---
+
+### 📡 Device Status (`DeviceStatus`)
+
+Shows sensor and connectivity health, updated every **2 seconds**.
+
+| Element | What Is Shown | How It's Derived |
+|---|---|---|
+| **Overall Health card** | Signal Quality 95 %, Battery 78 %, Status "Optimal" | Initial static values |
+| **System Connectivity grid** (4 cards) | IoT Sensor (Bluetooth), Internet (WiFi), AI Models (CPU), Cloud Sync — each showing latency in ms and a connected/warning/disconnected dot | Latency updated every 2 s with a ±10 ms random walk; status has a 5 % chance per tick of flipping `connected → warning` and a 50 % chance of recovering `warning → connected` |
+| **Device Information** | Firmware v2.1.4, Last Sync "2 minutes ago", Sensor Status "optimal" | Static mock values |
+| **Sync Now** button | Triggers a re-sync action | UI-only button (no backend call in demo) |
+
+---
+
+### ⚙️ Settings / Profile (`ProfileSettings`)
+
+| Element | What Is Shown | How It's Derived |
+|---|---|---|
+| **Dark Mode toggle** | Reflects current theme (dark/light) | Reads from `ThemeContext`; toggling calls `toggleTheme()` which persists in React context |
+| **Health Tracking toggle** | On by default | Local `useState` |
+| **Data Sharing toggle** | Off by default | Local `useState` |
+| **Alert Notifications toggle** | On by default | Local `useState` |
+| **Public Profile toggle** | Off by default | Local `useState` |
+| **App Info** | Name "VitalSense", version v1.0.0 | Hard-coded |
+| **Sign Out button** | Red button to sign out | UI-only in demo |
+
+---
+
+### 🔽 Bottom Navigation Bar (`BottomNav`)
+
+Always visible at the bottom. Contains five tabs: **Home**, **Insights**, **Trends**, **Device**, **Profile**. The active tab is highlighted with a blue pill background and a small blue dot indicator. Tapping a tab sets the `activeScreen` state in `App.tsx` which swaps the rendered screen.
+
+## 🚀 Tech Stack
+
+### Frontend
+- **React** 18.3.1 - UI library
+- **TypeScript** - Type-safe development
+- **Vite** - Fast build tool and dev server
+- **Tailwind CSS** - Utility-first CSS framework
 - **Framer Motion** - Animation library
 
-### Data & Visualization
-- **Recharts** - React charting library
-- **Embla Carousel** - Carousel component
-- **React Day Picker** - Calendar component
+### UI Components
+- **Radix UI** - Accessible, unstyled coponent library
+- **Lucide React** - Beautiful icon set
+- **Recharts** - Comosable charting library
+- **shadcn/ui** - Re-usable component collectn
 
-### Forms & Utilities
-- **React Hook Form** - Efficient form handling
-- **next-themes** - Theme management
-- **sonner** - Toast notifications
-- **clsx / tailwind-merge** - Classname utilities
+### Backend & Data
+- **Supabase** - Backend as a Service (BaaS)
+- **React Hook Form** - Form validation and management
 
-### Development
-- **Vite React SWC** - Fast JSX transformation
-- **TypeScript** - Static type checking
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 16+ and npm/yarn/pnpm
-- Modern web browser
-
-### Installation
+## 📦 Installation
 
 1. **Clone the repository**
    ```bash
-   cd "Health Monitoring App UI"
+   git clone https://github.com/lavansh1306/health-monitor-app.git
+   cd health-monitor-app
    ```
 
 2. **Install dependencies**
    ```bash
    npm install
    ```
-   
-   **Note**: The app uses a mock authentication system. No Supabase setup is required.
 
-3. **Start the development server**
+3. **Set up environment variables**
+   Create a `.env` file in the root directory and add your Supabase credentials:
+   ```env
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+4. **Start the development server**
    ```bash
    npm run dev
    ```
 
-4. **Open in browser**
-   ```
-   http://localhost:3000/
-   ```
+   The app will be available at `http://localhost:3000`
 
-### Build for Production
+## 🏗️ Build for Production
+
+To create a production build:
+
 ```bash
 npm run build
 ```
 
----
+The optimized build will be available in the `build` directory.
 
-## 🔐 Authentication & User Flow
-
-### How It Works
-
-**Mock Authentication** - Uses localStorage for demo purposes. Any email/password combination works.
-
-### User Journey
+## 📁 Project Structure
 
 ```
-1. Landing Page (/)
-   └─→ Feature overview & CTAs
-       └─→ "Get Started" button
-
-2. Login Page (/login)
-   ├─→ Sign In with any email/password
-   └─→ Sign Up with full name, email, password
-       └─→ Credentials stored in localStorage
-           └─→ Redirects to Onboarding
-
-3. Onboarding Page (/onboarding)
-   └─→ Welcome screen with feature showcase
-       └─→ Important health disclaimers
-           └─→ "I Understand, Continue" button
-               └─→ Sets onboardingComplete flag
-                   └─→ Redirects to Dashboard
-
-4. App Dashboard (/app)
-   └─→ Full health monitoring interface
-       ├─→ Home (Vital signs overview)
-       ├─→ Health Insights (Analysis & early screening)
-       ├─→ Trends (Historical data & patterns)
-       ├─→ Experimental (Beta health indicators)
-       ├─→ Device Status (Connected devices)
-       └─→ Settings (User preferences)
+health-monitor-app/
+├── src/
+│   ├── components/      # Reusable UI components
+│   │   ├── ui/         # shadcn/ui components
+│   │   ├── MetricCard.tsx
+│   │   ├── StatusMonitor.tsx
+│   │   └── ...
+│   ├── pages/          # Page components
+│   │   └── Home.tsx
+│   ├── contexts/       # React contexts
+│   ├── lib/            # Utility functions
+│   ├── styles/         # CSS and styling files
+│   ├── App.tsx         # Main app component
+│   └── main.tsx        # Application entry point
+├── public/             # Static assets
+├── index.html          # HTML template
+├── vite.config.ts      # Vite configuration
+├── tailwind.config.ts  # Tailwind configuration
+└── package.json        # Dependencies and scripts
 ```
 
-### Authentication State
+## 🎨 Design
 
-```typescript
-// AuthContext provides:
-{
-  user: { id, email, fullName } | null
-  loading: boolean
-  onboardingComplete: boolean
-  signIn(email, password): Promise<void>
-  signUp(email, password, fullName): Promise<void>
-  signOut(): Promise<void>
-  setOnboardingComplete(boolean): void
-}
-```
+This project is based on the professional UI design available at:
+[Health Monitoring App UI - Figma](https://www.figma.com/design/seCPrXx8dugu5qfYrzWiAK/Health-Monitoring-App-UI)
 
-### Protected Routes
-- **Onboarding** - Requires authentication, redirects if already onboarded
-- **App Dashboard** - Requires authentication + onboarding completion
-- **Landing & Login** - Public routes
+## 🤝 Contributing
 
----
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📍 Routes & Pages
-
-| Route | Component | Access | Description |
-|-------|-----------|--------|-------------|
-| `/` | Landing | Public | Feature showcase landing page |
-| `/login` | LoginPage | Public | Sign in / Sign up form |
-| `/onboarding` | OnboardingPage | Auth Only | Welcome & disclaimer screen |
-| `/app` | MainAppDashboard | Auth + Onboarded | Main health dashboard |
-| `*` | Redirect | - | Redirects to landing page |
-
-### Dashboard Navigation
-
-Inside `/app`, users can navigate between:
-- **home** - Real-time vital signs overview
-- **insights** - Health analysis & insights
-- **trends** - Historical data & trend analysis
-- **experimental** - Beta health indicators
-- **device** - Connected device management
-- **profile** - Settings & preferences
-
----
-
-## 🎨 Design System
-
-### Color Palette
-
-#### Risk-Based Colors (Medical Context)
-- **Emerald** - Low Risk / Healthy
-- **Amber** - Medium Risk / Warning
-- **Rose** - High Risk / Critical
-
-#### Theme Support
-- **Light Mode** - Clean, medical aesthetic (bg-white)
-- **Dark Mode** - Modern dark interface (bg-gray-900)
-
-### Component System
-
-The app follows a component-based architecture with reusable, composable UI elements:
-
-- **HealthMetricCard** - Display health metrics with risk indicators
-- **HealthRiskRing** - Circular risk visualization
-- **MetricCard** - Simple metric display
-- **AnimatedMetricCard** - Animated metric transitions
-- **PageLayout** - Page wrapper with header
-- **BottomNav** - Mobile navigation bar
-
-### Typography
-- **Headings** - Bold sans-serif
-- **Body** - Regular weight for readability
-- **Captions** - Small, gray text for supplementary info
-
----
-
-## 📊 Key Components Overview
-
-### HomeDashboard
-Central dashboard showing:
-- Real-time vital signs (SpO₂, Heart Rate, Respiratory Rate)
-- Health status overview
-- Device connectivity status
-- Quick action cards
-
-### HealthInsights
-Advanced health analysis with:
-- Trend indicators
-- Risk assessments
-- Personalized recommendations
-- Early screening warnings
-
-### TrendsHistory
-Historical data visualization:
-- 30/90/12-month trends
-- Interactive charts (Recharts)
-- Pattern analysis
-- Comparative metrics
-
-### ExperimentalFeatures
-Beta health indicators:
-- Breathing irregularity detection
-- Oxygen saturation risk analysis
-- Cardiac recovery index
-- Stress response assessment
-- Physical activity scoring
-- Circadian rhythm alignment
-
-### DeviceStatus
-Device management:
-- Connected devices list
-- Battery status
-- Signal strength
-- Sync information
-- Device pairing options
-
-### ProfileSettings
-User preferences:
-- Profile information
-- Notification settings
-- Privacy preferences
-- Data export/import
-- Account management
-
----
-
-## 🎯 Features Details
-
-### Real-time Monitoring
-- Live vital sign updates from connected devices
-- Historical data storage
-- Alert thresholds
-- Notification system
-
-### Health Insights
-- AI-powered early screening detection
-- Risk level assessment (Low/Medium/High)
-- Trend analysis and predictions
-- Personalized health recommendations
-
-### Trend Analysis
-- Multi-timeframe views (1m, 3m, 12m)
-- Pattern recognition
-- Comparative analysis
-- Export capabilities
-
-### Device Integration
-- Multi-device support
-- Automatic sync
-- Battery monitoring
-- Signal strength indicator
-
----
-
-## 🛠️ Development
-
-### File Structure Best Practices
-
-- **Components** - Reusable UI elements in `/components`
-- **Pages** - Full page layouts in `/pages`
-- **Contexts** - Global state management in `/contexts`
-- **Styles** - CSS files in `/styles`
-- **Lib** - Utility functions and helpers in `/lib`
-
-### Adding New Features
-
-1. Create component in `/components` if reusable
-2. Create page in `/pages` if it's a full page
-3. Add route in `App.tsx` if needed
-4. Update navigation if needed
-5. Follow existing design patterns
-
-### Theming
-
-The app uses `next-themes` for theme management:
-
-```typescript
-// Use theme context
-import { useTheme } from '@/contexts/ThemeContext';
-
-function MyComponent() {
-  const { theme, toggleTheme } = useTheme();
-  
-  return (
-    <div className={theme === 'dark' ? 'bg-gray-900' : 'bg-white'}>
-      {/* Content */}
-    </div>
-  );
-}
-```
-
-### Authentication
-
-Mock auth uses localStorage:
-
-```typescript
-// Use auth context
-import { useAuth } from '@/contexts/AuthContext';
-
-function MyComponent() {
-  const { user, signIn, signOut, onboardingComplete } = useAuth();
-  
-  return (
-    <div>
-      {user ? `Welcome ${user.email}` : 'Please sign in'}
-    </div>
-  );
-}
-```
-
----
-
-## 📝 Scripts
-
-```bash
-# Development
-npm run dev              # Start dev server
-
-# Production
-npm run build            # Build for production
-
-# Other
-npm audit               # Check for vulnerabilities
-npm audit fix           # Fix security issues
-```
-
----
-
-## 🔄 State Management
-
-### AuthContext
-- User authentication state
-- Login/Logout functionality
-- Onboarding completion status
-- localStorage persistence
-
-### ThemeContext
-- Dark/Light theme toggle
-- Theme persistence
-- Global theme state
-
-### Component State
-- Local component state with `useState`
-- Form state with `react-hook-form` where applicable
-
----
-
-## 📱 Responsive Design
-
-- **Mobile** - Single column, full-width cards
-- **Tablet** - 2-column grid layouts
-- **Desktop** - 3-4 column layouts with sidebar
-- **Breakpoints** - Tailwind defaults (sm, md, lg, xl, 2xl)
-
----
-
-## ♿ Accessibility
-
-- **Semantic HTML** - Proper heading hierarchy
-- **ARIA Labels** - Form inputs and interactive elements
-- **Keyboard Navigation** - Full keyboard support
-- **Color Contrast** - WCAG AA compliant colors
-- **Focus States** - Clear focus indicators
-
----
-
-## 📚 Additional Documentation
-
-- **[DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)** - Detailed design system specifications
-- **[REFACTORING_NOTES.md](./REFACTORING_NOTES.md)** - Component refactoring history
-- **[WORKFLOW_SETUP.md](./WORKFLOW_SETUP.md)** - Authentication & routing guide
-
----
-
-## 🎓 Learning Resources
-
-- [React Documentation](https://react.dev)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [Tailwind CSS](https://tailwindcss.com)
-- [React Router](https://reactrouter.com)
-- [Radix UI](https://radix-ui.com)
-- [Framer Motion](https://www.framer.com/motion/)
-
----
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-This project is part of a hackathon submission. Please refer to the original repository for license information.
-
----
+This project is open source and available under the [MIT License](LICENSE).
 
 ## 🙏 Acknowledgments
 
-- **Design**: Based on [Figma design](https://www.figma.com/design/seCPrXx8dugu5qfYrzWiAK/Health-Monitoring-App-UI)
-- **UI Components**: Radix UI & shadcn/ui ecosystem
-- **Icons**: Lucide React
-- **Animations**: Framer Motion
-- **Styling**: Tailwind CSS
+- Design inspiration from the Figma community
+- Built with modern React best practices
+- Powered by the amazing open-source community
+
+## 📞 Contact
+
+For questions or feedback, please open an issue on GitHub.
 
 ---
 
-## 📞 Support
-
-For issues or questions:
-1. Check the documentation files
-2. Review component props and interfaces
-3. Check TypeScript type definitions
-4. Review existing component implementations
-
----
-
-## 🚦 Current Status
-
-✅ **Core Features Implemented:**
-- Landing page
-- Authentication (mock)
-- Onboarding flow
-- Dashboard with navigation
-- Health monitoring interface
-- Theme switching
-- Responsive design
-
-🚧 **Future Enhancements:**
-- Real device integration
-- Backend API connection
-- Advanced analytics
-- Push notifications
-- Data export features
-- Social sharing
-
----
-
-**Last Updated**: March 2024  
-**Version**: 0.1.0
+Made with ❤️ by [lavansh1306](https://github.com/lavansh1306)
