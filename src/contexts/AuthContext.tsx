@@ -1,18 +1,28 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabaseClient';
+
+interface FakeUser {
+  id: string;
+  email: string;
+  fullName?: string;
+}
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: FakeUser | null;
   loading: boolean;
+  onboardingComplete: boolean;
+  setOnboardingComplete: (complete: boolean) => void;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, fullName: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  session: null,
   loading: true,
+  onboardingComplete: false,
+  setOnboardingComplete: () => {},
+  signIn: async () => {},
+  signUp: async () => {},
   signOut: async () => {},
 });
 
@@ -29,41 +39,69 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<FakeUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [onboardingComplete, setOnboardingComplete] = useState(() => {
+    const stored = localStorage.getItem('onboardingComplete');
+    return stored ? JSON.parse(stored) : false;
+  });
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    // Check if user was previously logged in
+    const storedUser = localStorage.getItem('fakeUser');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    setLoading(false);
   }, []);
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
+  const signIn = async (email: string, password: string) => {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const fakeUser: FakeUser = {
+      id: Math.random().toString(36).substr(2, 9),
+      email,
+    };
+    
+    setUser(fakeUser);
+    localStorage.setItem('fakeUser', JSON.stringify(fakeUser));
+  };
+
+  const signUp = async (email: string, password: string, fullName: string) => {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const fakeUser: FakeUser = {
+      id: Math.random().toString(36).substr(2, 9),
+      email,
+      fullName,
+    };
+    
+    setUser(fakeUser);
+    localStorage.setItem('fakeUser', JSON.stringify(fakeUser));
+  };
+
+  const handleSignOut = async () => {
     setUser(null);
-    setSession(null);
+    setOnboardingComplete(false);
+    localStorage.removeItem('fakeUser');
+    localStorage.removeItem('onboardingComplete');
+  };
+
+  const handleSetOnboardingComplete = (complete: boolean) => {
+    setOnboardingComplete(complete);
+    localStorage.setItem('onboardingComplete', JSON.stringify(complete));
   };
 
   const value = {
     user,
-    session,
     loading,
-    signOut,
+    onboardingComplete,
+    setOnboardingComplete: handleSetOnboardingComplete,
+    signIn,
+    signUp,
+    signOut: handleSignOut,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

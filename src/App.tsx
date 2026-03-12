@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+import { useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { PageLayout } from './components/PageLayout';
 import { HomeDashboard } from './components/HomeDashboard';
@@ -9,6 +11,9 @@ import { ExperimentalFeatures } from './components/ExperimentalFeatures';
 import { DeviceStatus } from './components/DeviceStatus';
 import { ProfileSettings } from './components/ProfileSettings';
 import { BottomNav } from './components/BottomNav';
+import { Landing } from './pages/Landing';
+import { LoginPage } from './pages/Login';
+import { OnboardingPage } from './pages/AppDashboard';
 
 type Screen = 'home' | 'insights' | 'trends' | 'experimental' | 'device' | 'profile';
 
@@ -21,12 +26,12 @@ const screenConfig: Record<Screen, { title?: string; subtitle?: string; showHead
   profile: { title: 'Settings', subtitle: 'Manage your preferences' }
 };
 
-function AppContent() {
+// Main App Dashboard Component
+function MainAppDashboard() {
   const [activeScreen, setActiveScreen] = useState<Screen>('home');
 
   const handleNavigate = (screen: Screen) => {
     setActiveScreen(screen);
-    // Scroll to top for better UX
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -71,10 +76,78 @@ function AppContent() {
   );
 }
 
+// Onboarding Protected Route
+function OnboardingRoute({ children }: { children: React.ReactNode }) {
+  const { user, onboardingComplete, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (onboardingComplete) {
+    return <Navigate to="/app" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+// App Route - Checks user and onboarding status
+function AppRoute() {
+  const { user, onboardingComplete, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!onboardingComplete) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  return <MainAppDashboard />;
+}
+
+// Main App with routing
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route
+        path="/onboarding"
+        element={
+          <OnboardingRoute>
+            <OnboardingPage />
+          </OnboardingRoute>
+        }
+      />
+      <Route path="/app" element={<AppRoute />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
 export default function App() {
   return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
+    <Router>
+      <ThemeProvider>
+        <AppRoutes />
+      </ThemeProvider>
+    </Router>
   );
 }
